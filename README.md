@@ -19,4 +19,4 @@ make
 
 ## Execução
 
-mpirun "<flags>" main "<matriz.txt>"
+mpirun flags main matriz.txt
