@@ -10,6 +10,5 @@
 #include <math.h>
 
 float *le_matriz(char *caminho, int *N);
-void escreve_matriz(float *m, int N, char *caminho);
 
 #endif

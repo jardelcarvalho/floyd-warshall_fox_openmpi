@@ -82,8 +82,8 @@ int main(int argc, char **argv) {
         free(m);
     }
 
-    // o código a partir daqui será executado por todos os processos
-    // com exceção dos condicionais para P_MASTER_RANK
+    /* o código a partir daqui será executado por todos os processos
+    com exceção dos condicionais para P_MASTER_RANK */
 
     // recebe dados enviados pelo master
     if(my_rank != P_MASTER_RANK) {
@@ -160,9 +160,7 @@ int main(int argc, char **argv) {
 
     for(int f = 1; f < N; f *= 2) {
 
-        for(int i = 0; i < t; i++) {
-            m_b[i] = my_sm[i];
-        }
+        memcpy(m_b, my_sm, t * sizeof(float));
 
         for(int step = 0; step < q; step++) {
             u = (r + step) % q;
@@ -187,19 +185,17 @@ int main(int argc, char **argv) {
             // envia própria matriz para processo da linha de cima, não bloqueante
             MPI_Isend(m_b, t, MPI_FLOAT, rank_acima, 0, MPI_COMM_WORLD, &request);
 
-            // copia m_b para m_b_cpy para caso a chamada mpi wait necessite reenviar m_b
-            memcpy(m_b_cpy, m_b, t * sizeof(float));
-
-            // recebe matriz do processo da linha de baixo
-            MPI_Recv(m_b, t, MPI_FLOAT, rank_abaixo, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            // recebe matriz do processo da linha de baixo em m_b_cpy para caso mpi wait necessite de m_b
+            MPI_Recv(m_b_cpy, t, MPI_FLOAT, rank_abaixo, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
             // aguarda até que a linha de cima tenha recebido a matriz
             MPI_Wait(&request, &status);
+
+            // m_b recebe a matriz da linha de baixo
+            memcpy(m_b, m_b_cpy, t * sizeof(float));
         }
 
-        for(int i = 0; i < t; i++) {
-            my_sm[i] = m_res[i];
-        }
+        memcpy(my_sm, m_res, t * sizeof(float));
     }
 
     if(my_rank != P_MASTER_RANK) {
@@ -221,6 +217,7 @@ int main(int argc, char **argv) {
         // master encaixando a sua submatriz
         encaixa(m_res, m, N, q, P_MASTER_RANK);
 
+        // recebe submatrizes dos processos
         for(int p = 1; p < num_procs; p++) {
             MPI_Recv(m_res, t, MPI_FLOAT, p, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             encaixa(m_res, m, N, q, p);
@@ -233,7 +230,10 @@ int main(int argc, char **argv) {
         print_m(m, N);
         printf("\n");
 
-        printf("t = %.15lfs\n", t_fim - t_ini);	
+        printf("t = %.15lfs\n", t_fim - t_ini);
+        
+        /* OBS: o resultado final está na matriz m
+        caso seja desejado salvar a matriz m em um arquivo ... */
 
         free(m);
     }
