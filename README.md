@@ -23,13 +23,13 @@ mpirun openmpi-flags main matriz.txt
 
 ## Entrada (matriz.txt)
 
-6
-0 2 0 5 0 0
-0 0 0 0 0 0
-0 2 0 0 0 5
-0 0 0 0 1 0
-3 9 3 0 0 0
-0 0 0 0 1 0
+6<\br>
+0 2 0 5 0 0<\br>
+0 0 0 0 0 0<\br>
+0 2 0 0 0 5<\br>
+0 0 0 0 1 0<\br>
+3 9 3 0 0 0<\br>
+0 0 0 0 1 0<\br>
 
 ```
 Primeira linha indica o tamanho de uma dimensão da matriz
