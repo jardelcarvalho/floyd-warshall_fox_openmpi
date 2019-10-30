@@ -1,6 +1,6 @@
 # Projeto
 
-Algoritmo de Floyd-Warshall paralelo com OpenMPI através do algoritmo de Fox.
+Algoritmo de Floyd-Warshall paralelo com OpenMPI através do algoritmo de Fox. Implementação sem o uso de comunicadores.
 
 ### Prerequisitos
 
